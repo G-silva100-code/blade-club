@@ -1,6 +1,20 @@
+import { redirect } from 'next/navigation'
+import { createClient } from '@/lib/supabase/server'
 import { Sidebar } from '@/components/layout/Sidebar'
 
-export default function AdminLayout({ children }: { children: React.ReactNode }) {
+export default async function AdminLayout({ children }: { children: React.ReactNode }) {
+  const supabase = createClient()
+  const { data: { session } } = await supabase.auth.getSession()
+  if (!session) redirect('/login')
+
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('type')
+    .eq('id', session.user.id)
+    .single()
+
+  if (profile?.type !== 'admin') redirect('/')
+
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="bg-gray-900 text-white px-6 py-3 text-sm font-medium">
