@@ -9,7 +9,7 @@ import { Button } from '@/components/ui/Button'
 export default function CadastroBarbeiroPage() {
   const [step, setStep] = useState(1)
   const [form, setForm] = useState({
-    name: '', email: '', phone: '', cpf: '', password: '',
+    name: '', email: '', phone: '', cnpj: '', password: '',
     bio: '', instagram: '', serviceRadius: '10',
     acceptedTerms: false,
   })
@@ -40,7 +40,7 @@ export default function CadastroBarbeiroPage() {
         data: {
           type: 'barber',
           full_name: form.name,
-          cpf: form.cpf.replace(/\D/g, ''),
+          cpf: form.cnpj.replace(/\D/g, ''),
           phone: form.phone,
           bio: form.bio,
           instagram: form.instagram,
@@ -64,7 +64,7 @@ export default function CadastroBarbeiroPage() {
         <div className="text-center mb-8">
           <Link href="/" className="inline-flex items-center gap-2 text-white font-bold text-xl">
             <Scissors className="h-6 w-6 text-brand-400" />
-            BarberApp
+            Blade Club
           </Link>
           <p className="mt-3 text-gray-400">Cadastro de barbeiro profissional</p>
 
@@ -82,7 +82,21 @@ export default function CadastroBarbeiroPage() {
               <Input label="Nome completo" value={form.name} onChange={(e) => set('name', e.target.value)} required />
               <Input label="Email" type="email" value={form.email} onChange={(e) => set('email', e.target.value)} required />
               <Input label="Telefone (WhatsApp)" type="tel" value={form.phone} onChange={(e) => set('phone', e.target.value)} placeholder="(41) 99999-0000" required />
-              <Input label="CPF" value={form.cpf} onChange={(e) => set('cpf', e.target.value)} placeholder="000.000.000-00" required />
+              <Input
+                label="CNPJ (MEI)"
+                value={form.cnpj}
+                onChange={(e) => {
+                  const digits = e.target.value.replace(/\D/g, '').slice(0, 14)
+                  const masked = digits
+                    .replace(/^(\d{2})(\d)/, '$1.$2')
+                    .replace(/^(\d{2})\.(\d{3})(\d)/, '$1.$2.$3')
+                    .replace(/\.(\d{3})(\d)/, '.$1/$2')
+                    .replace(/(\d{4})(\d)/, '$1-$2')
+                  set('cnpj', masked)
+                }}
+                placeholder="00.000.000/0001-00"
+                required
+              />
               <Input label="Senha" type="password" value={form.password} onChange={(e) => set('password', e.target.value)} required />
               <Button type="button" className="w-full" size="lg" onClick={() => setStep(2)}>
                 Continuar
@@ -132,7 +146,9 @@ export default function CadastroBarbeiroPage() {
               <div className="bg-gray-50 rounded-xl p-4 text-sm text-gray-600 space-y-2 max-h-48 overflow-y-auto">
                 <p className="font-medium">Ao se cadastrar como barbeiro você concorda com:</p>
                 <ul className="space-y-1.5 list-disc pl-4">
-                  <li>Comissão de 20% sobre o valor dos serviços</li>
+                  <li>Comissão de 30% sobre o valor dos serviços</li>
+                  <li>Você atua como prestador autônomo (MEI) — não há vínculo empregatício com a plataforma</li>
+                  <li>Cada parte emite nota fiscal ou RPA apenas sobre o valor que efetivamente recebeu</li>
                   <li>Multa de R$500 por atendimento comprovado fora da plataforma</li>
                   <li>Suspensão em caso de 3 no-shows consecutivos</li>
                   <li>Exclusão permanente em caso de reincidência de bypass</li>
