@@ -26,6 +26,7 @@ interface BookingRow extends Booking {
 export default async function ClienteDashboardPage() {
   const supabase = createClient()
   const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return null
 
   const profileResult = await supabase
     .from('profiles')

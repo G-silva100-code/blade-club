@@ -11,6 +11,7 @@ interface CompletedBooking extends Booking {
 export default async function FinanceiroPage() {
   const supabase = createClient()
   const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return null
 
   const now = new Date()
   const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1).toISOString()

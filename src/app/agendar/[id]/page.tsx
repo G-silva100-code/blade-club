@@ -19,6 +19,7 @@ export default async function AgendarPage({ params }: { params: { id: string } }
   const supabase = createClient()
 
   const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return null
   if (!user) redirect(`/login?redirectTo=/agendar/${params.id}`)
 
   const [barberResult, profileResult, servicesResult] = await Promise.all([

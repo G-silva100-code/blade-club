@@ -20,6 +20,7 @@ const statusVariant: Record<string, 'default' | 'success' | 'warning' | 'danger'
 export default async function AgendamentosPage() {
   const supabase = createClient()
   const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return null
   if (!user) redirect('/login')
 
   const { data: rawBookings } = await supabase

@@ -24,6 +24,7 @@ const statusVariant: Record<string, 'default' | 'success' | 'warning' | 'danger'
 export default async function SolicitacoesPage() {
   const supabase = createClient()
   const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return null
 
   const result = await supabase
     .from('bookings')

@@ -9,6 +9,7 @@ import { History } from 'lucide-react'
 export default async function HistoricoPage() {
   const supabase = createClient()
   const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return null
   if (!user) redirect('/login')
 
   const { data: rawBookings } = await supabase

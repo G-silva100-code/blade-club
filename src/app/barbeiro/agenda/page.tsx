@@ -8,6 +8,7 @@ export const metadata: Metadata = { title: 'Agenda' }
 export default async function AgendaPage() {
   const supabase = createClient()
   const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return null
   if (!user) redirect('/login')
 
   const { data: barber } = await supabase

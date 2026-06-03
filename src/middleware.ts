@@ -1,8 +1,8 @@
-import { type NextRequest, NextResponse } from 'next/server'
+import { type NextRequest } from 'next/server'
+import { updateSession } from '@/lib/supabase/middleware'
 
-// Middleware mínimo — proteção de rotas feita pelos layouts server-side
-export function middleware(request: NextRequest) {
-  return NextResponse.next()
+export async function middleware(request: NextRequest) {
+  return (await updateSession(request)).supabaseResponse
 }
 
 export const config = {
