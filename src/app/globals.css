@@ -1,0 +1,43 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --font-inter: 'Inter', sans-serif;
+    --font-playfair: 'Playfair Display', Georgia, serif;
+    --color-bg:     #0A0A0A;
+    --color-card:   #141414;
+    --color-gold:   #C9A84C;
+    --color-text:   #F5F5F0;
+    --color-muted:  #888888;
+    --color-border: #222222;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-blade-bg text-blade-text antialiased;
+    font-family: var(--font-inter), sans-serif;
+  }
+
+  h1, h2, h3 {
+    font-family: var(--font-playfair), Georgia, serif;
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  .gold-line::before,
+  .gold-line::after {
+    content: '';
+    display: block;
+    height: 1px;
+    background: #C9A84C;
+  }
+}

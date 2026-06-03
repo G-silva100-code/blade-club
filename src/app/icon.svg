@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <rect width="32" height="32" rx="6" fill="#0A0A0A"/>
+  <rect x="4" y="7" width="24" height="0.8" fill="#C9A84C"/>
+  <text
+    x="16" y="22"
+    font-family="Georgia, serif"
+    font-weight="700"
+    font-size="18"
+    fill="#F5F5F0"
+    text-anchor="middle"
+    letter-spacing="1"
+  >BC</text>
+  <rect x="4" y="25" width="24" height="0.8" fill="#C9A84C"/>
+</svg>

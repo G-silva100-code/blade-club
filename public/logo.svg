@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 260 84" fill="none">
+  <!-- Top gold line -->
+  <rect x="0" y="10" width="260" height="0.8" fill="#C9A84C"/>
+  <!-- BLADE — serif bold -->
+  <text
+    x="130" y="52"
+    font-family="Georgia, 'Times New Roman', serif"
+    font-weight="700"
+    font-size="34"
+    fill="#F5F5F0"
+    text-anchor="middle"
+    letter-spacing="8"
+  >BLADE</text>
+  <!-- CLUB — sans-serif spaced -->
+  <text
+    x="130" y="67"
+    font-family="'Helvetica Neue', Arial, sans-serif"
+    font-size="10"
+    fill="#C9A84C"
+    text-anchor="middle"
+    letter-spacing="16"
+  >CLUB</text>
+  <!-- Bottom gold line -->
+  <rect x="0" y="74" width="260" height="0.8" fill="#C9A84C"/>
+</svg>
