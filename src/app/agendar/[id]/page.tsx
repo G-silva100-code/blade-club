@@ -18,7 +18,8 @@ export async function generateMetadata({ params }: { params: { id: string } }): 
 export default async function AgendarPage({ params }: { params: { id: string } }) {
   const supabase = createClient()
 
-  const { data: { user } } = await supabase.auth.getUser()
+  const { data: { session } } = await supabase.auth.getSession()
+  const user = session?.user ?? null
   if (!user) return null
   if (!user) redirect(`/login?redirectTo=/agendar/${params.id}`)
 

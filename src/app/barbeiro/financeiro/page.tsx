@@ -10,7 +10,8 @@ interface CompletedBooking extends Booking {
 
 export default async function FinanceiroPage() {
   const supabase = createClient()
-  const { data: { user } } = await supabase.auth.getUser()
+  const { data: { session } } = await supabase.auth.getSession()
+  const user = session?.user ?? null
   if (!user) return null
 
   const now = new Date()

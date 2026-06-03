@@ -4,7 +4,8 @@ import { Sidebar } from '@/components/layout/Sidebar'
 
 export default async function ClienteLayout({ children }: { children: React.ReactNode }) {
   const supabase = createClient()
-  const { data: { user } } = await supabase.auth.getUser()
+  const { data: { session } } = await supabase.auth.getSession()
+  const user = session?.user ?? null
   if (!user) redirect('/login')
 
   const { data: profile } = await supabase.from('profiles').select('type').eq('id', user.id).single()

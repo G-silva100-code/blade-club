@@ -7,7 +7,8 @@ export const metadata: Metadata = { title: 'Agenda' }
 
 export default async function AgendaPage() {
   const supabase = createClient()
-  const { data: { user } } = await supabase.auth.getUser()
+  const { data: { session } } = await supabase.auth.getSession()
+  const user = session?.user ?? null
   if (!user) return null
   if (!user) redirect('/login')
 

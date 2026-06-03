@@ -16,7 +16,8 @@ interface PendingBookingRow extends Booking {
 
 export default async function BarbeiroDashboardPage() {
   const supabase = createClient()
-  const { data: { user } } = await supabase.auth.getUser()
+  const { data: { session } } = await supabase.auth.getSession()
+  const user = session?.user ?? null
   if (!user) return null
 
   const [barberResult, pendingResult, monthResult] = await Promise.all([
