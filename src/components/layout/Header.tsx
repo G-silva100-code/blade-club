@@ -8,18 +8,44 @@ import type { User } from '@supabase/supabase-js'
 
 export function Header() {
   const [user, setUser] = useState<User | null>(null)
+  const [userType, setUserType] = useState<string | null>(null)
   const [menuOpen, setMenuOpen] = useState(false)
 
   useEffect(() => {
     import('@/lib/supabase/client').then(({ createClient }) => {
       const supabase = createClient()
-      supabase.auth.getUser().then(({ data }) => setUser(data.user))
-      const { data: listener } = supabase.auth.onAuthStateChange((_, session) =>
+      supabase.auth.getUser().then(async ({ data }) => {
+        setUser(data.user)
+        if (data.user) {
+          const { data: profile } = await supabase
+            .from('profiles')
+            .select('type')
+            .eq('id', data.user.id)
+            .single()
+          setUserType((profile as { type: string } | null)?.type ?? null)
+        }
+      })
+      const { data: listener } = supabase.auth.onAuthStateChange(async (_, session) => {
         setUser(session?.user ?? null)
-      )
+        if (session?.user) {
+          const { data: profile } = await supabase
+            .from('profiles')
+            .select('type')
+            .eq('id', session.user.id)
+            .single()
+          setUserType((profile as { type: string } | null)?.type ?? null)
+        } else {
+          setUserType(null)
+        }
+      })
       return () => listener.subscription.unsubscribe()
     })
   }, [])
+
+  const dashboardHref =
+    userType === 'barber' ? '/barbeiro/dashboard' :
+    userType === 'admin'  ? '/admin/barbeiros' :
+    '/cliente/dashboard'
 
   return (
     <header className="sticky top-0 z-40 bg-blade-bg/95 backdrop-blur border-b border-blade-border">
@@ -43,7 +69,7 @@ export function Header() {
         <div className="hidden md:flex items-center gap-3">
           {user ? (
             <Link
-              href="/cliente/dashboard"
+              href={dashboardHref}
               className="rounded-full border border-blade-border px-5 py-2 text-sm font-medium text-blade-text hover:border-gold hover:text-gold transition-colors"
             >
               Minha conta
@@ -80,7 +106,7 @@ export function Header() {
           <Link href="/barbeiros" className="block text-blade-muted py-2" onClick={() => setMenuOpen(false)}>Trabalhe conosco</Link>
           <div className="pt-3 flex flex-col gap-3">
             {user ? (
-              <Link href="/cliente/dashboard" className="block text-center rounded-full bg-gold py-2.5 text-sm font-semibold text-blade-bg">
+              <Link href={dashboardHref} className="block text-center rounded-full bg-gold py-2.5 text-sm font-semibold text-blade-bg">
                 Minha conta
               </Link>
             ) : (

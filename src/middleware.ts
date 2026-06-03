@@ -1,35 +1,8 @@
-import { NextResponse, type NextRequest } from 'next/server'
-import { updateSession } from '@/lib/supabase/middleware'
+import { type NextRequest, NextResponse } from 'next/server'
 
-const PUBLIC_PATHS = [
-  '/',
-  '/buscar',
-  '/barbeiros',
-  '/barbeiro',
-  '/login',
-  '/cadastro',
-  '/api/auth',
-  '/api/stripe/webhook',
-  '/api/slots',
-  '/api/geocode',
-]
-
-function isPublicPath(pathname: string) {
-  return PUBLIC_PATHS.some((p) => pathname === p || pathname.startsWith(p + '/'))
-}
-
-export async function middleware(request: NextRequest) {
-  const { supabaseResponse, user } = await updateSession(request)
-  const { pathname } = request.nextUrl
-
-  if (!user && !isPublicPath(pathname)) {
-    const loginUrl = request.nextUrl.clone()
-    loginUrl.pathname = '/login'
-    loginUrl.searchParams.set('redirectTo', pathname)
-    return NextResponse.redirect(loginUrl)
-  }
-
-  return supabaseResponse
+// Middleware mínimo — proteção de rotas feita pelos layouts server-side
+export function middleware(request: NextRequest) {
+  return NextResponse.next()
 }
 
 export const config = {

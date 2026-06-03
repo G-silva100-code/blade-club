@@ -1,6 +1,8 @@
 import { createServerClient } from '@supabase/ssr'
 import { cookies } from 'next/headers'
 
+type CookieToSet = { name: string; value: string; options?: object }
+
 export function createClient() {
   const cookieStore = cookies()
 
@@ -12,13 +14,13 @@ export function createClient() {
         getAll() {
           return cookieStore.getAll()
         },
-        setAll(cookiesToSet: { name: string; value: string; options?: Record<string, unknown> }[]) {
+        setAll(cookiesToSet: CookieToSet[]) {
           try {
             cookiesToSet.forEach(({ name, value, options }) =>
-              cookieStore.set(name, value, options)
+                cookieStore.set(name, value, options as any)
             )
           } catch {
-            // Server Component — cookies não podem ser escritos
+            // Chamado de Server Component — ignorar
           }
         },
       },
@@ -31,10 +33,7 @@ export function createAdminClient() {
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.SUPABASE_SERVICE_ROLE_KEY!,
     {
-      cookies: {
-        getAll: () => [],
-        setAll: () => {},
-      },
+      cookies: { getAll: () => [], setAll: () => {} },
     }
   )
 }

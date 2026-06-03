@@ -26,6 +26,13 @@ export default function CadastroClientePage() {
     const { data, error: signUpError } = await supabase.auth.signUp({
       email: form.email,
       password: form.password,
+      options: {
+        data: {
+          type: 'client',
+          full_name: form.name,
+          phone: form.phone,
+        },
+      },
     })
 
     if (signUpError || !data.user) {
@@ -33,15 +40,6 @@ export default function CadastroClientePage() {
       setLoading(false)
       return
     }
-
-    await supabase.from('profiles').insert({
-      id: data.user.id,
-      type: 'client',
-      full_name: form.name,
-      phone: form.phone,
-    })
-
-    await supabase.from('clients').insert({ id: data.user.id })
 
     window.location.href = '/cliente/dashboard'
   }

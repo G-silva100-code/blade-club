@@ -3,21 +3,45 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { cn } from '@/lib/utils'
-import type { LucideIcon } from 'lucide-react'
+import {
+  LayoutDashboard, Calendar, Scissors, Settings,
+  DollarSign, Star, Bell, CalendarDays, History,
+  MessageSquare, Users, Flag,
+} from 'lucide-react'
 
-interface NavItem {
-  label: string
-  href: string
-  icon: LucideIcon
+type NavType = 'barbeiro' | 'cliente' | 'admin'
+
+const NAV_CONFIG: Record<NavType, Array<{ label: string; href: string; icon: React.ElementType }>> = {
+  barbeiro: [
+    { label: 'Dashboard',     href: '/barbeiro/dashboard',    icon: LayoutDashboard },
+    { label: 'Solicitações',  href: '/barbeiro/solicitacoes', icon: Bell            },
+    { label: 'Agenda',        href: '/barbeiro/agenda',       icon: Calendar        },
+    { label: 'Serviços',      href: '/barbeiro/servicos',     icon: Scissors        },
+    { label: 'Financeiro',    href: '/barbeiro/financeiro',   icon: DollarSign      },
+    { label: 'Avaliações',    href: '/barbeiro/avaliacoes',   icon: Star            },
+    { label: 'Configurações', href: '/barbeiro/configuracoes',icon: Settings        },
+  ],
+  cliente: [
+    { label: 'Dashboard',    href: '/cliente/dashboard',    icon: LayoutDashboard },
+    { label: 'Agendamentos', href: '/cliente/agendamentos', icon: CalendarDays    },
+    { label: 'Histórico',    href: '/cliente/historico',    icon: History         },
+    { label: 'Mensagens',    href: '/cliente/chat',         icon: MessageSquare   },
+  ],
+  admin: [
+    { label: 'Visão geral',   href: '/admin',           icon: LayoutDashboard },
+    { label: 'Barbeiros',     href: '/admin/barbeiros', icon: Users           },
+    { label: 'Flags bypass',  href: '/admin/flags',     icon: Flag            },
+  ],
 }
 
 interface SidebarProps {
-  items: NavItem[]
+  type:  NavType
   title: string
 }
 
-export function Sidebar({ items, title }: SidebarProps) {
+export function Sidebar({ type, title }: SidebarProps) {
   const pathname = usePathname()
+  const items    = NAV_CONFIG[type]
 
   return (
     <aside className="w-64 shrink-0 hidden lg:block">
@@ -27,7 +51,7 @@ export function Sidebar({ items, title }: SidebarProps) {
         </p>
         <nav className="space-y-1">
           {items.map((item) => {
-            const Icon = item.icon
+            const Icon   = item.icon
             const active = pathname === item.href || pathname.startsWith(item.href + '/')
             return (
               <Link

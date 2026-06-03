@@ -36,6 +36,17 @@ export default function CadastroBarbeiroPage() {
     const { data, error: signUpError } = await supabase.auth.signUp({
       email: form.email,
       password: form.password,
+      options: {
+        data: {
+          type: 'barber',
+          full_name: form.name,
+          cpf: form.cpf.replace(/\D/g, ''),
+          phone: form.phone,
+          bio: form.bio,
+          instagram: form.instagram,
+          service_radius_km: Number(form.serviceRadius),
+        },
+      },
     })
 
     if (signUpError || !data.user) {
@@ -43,22 +54,6 @@ export default function CadastroBarbeiroPage() {
       setLoading(false)
       return
     }
-
-    await supabase.from('profiles').insert({
-      id: data.user.id,
-      type: 'barber',
-      full_name: form.name,
-      cpf: form.cpf.replace(/\D/g, ''),
-      phone: form.phone,
-    })
-
-    await supabase.from('barbers').insert({
-      id: data.user.id,
-      bio: form.bio,
-      instagram_url: form.instagram,
-      status: 'pending',
-      service_radius_km: Number(form.serviceRadius),
-    })
 
     window.location.href = '/barbeiro/dashboard?cadastro=pendente'
   }

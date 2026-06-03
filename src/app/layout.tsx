@@ -1,18 +1,5 @@
 import type { Metadata } from 'next'
-import { Inter, Playfair_Display } from 'next/font/google'
 import './globals.css'
-
-const inter = Inter({
-  subsets: ['latin'],
-  variable: '--font-inter',
-  display: 'swap',
-})
-
-const playfair = Playfair_Display({
-  subsets: ['latin'],
-  variable: '--font-playfair',
-  display: 'swap',
-})
 
 export const metadata: Metadata = {
   title: {
@@ -25,14 +12,14 @@ export const metadata: Metadata = {
   openGraph: {
     type:     'website',
     locale:   'pt_BR',
-    url:      process.env.NEXT_PUBLIC_APP_URL,
+    url:      'https://blade-club.vercel.app',
     siteName: 'Blade Club',
   },
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="pt-BR" className={`${inter.variable} ${playfair.variable}`}>
+    <html lang="pt-BR">
       <body>{children}</body>
     </html>
   )

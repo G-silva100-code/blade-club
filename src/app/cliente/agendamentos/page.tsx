@@ -1,17 +1,11 @@
+import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import Link from 'next/link'
-import { Avatar } from '@/components/ui/Avatar'
 import { Badge } from '@/components/ui/Badge'
 import { Card, CardBody } from '@/components/ui/Card'
 import { formatCurrency, formatDate } from '@/lib/utils'
 import { BOOKING_STATUS_LABELS } from '@/lib/constants'
 import { CalendarClock, Plus } from 'lucide-react'
-import type { Booking, Profile, BarberService } from '@/types'
-
-interface BookingRow extends Booking {
-  barbers: { profiles: Pick<Profile, 'full_name' | 'avatar_url'> }
-  barber_services: Pick<BarberService, 'name'>
-}
 
 const statusVariant: Record<string, 'default' | 'success' | 'warning' | 'danger'> = {
   pending:        'warning',
@@ -26,16 +20,26 @@ const statusVariant: Record<string, 'default' | 'success' | 'warning' | 'danger'
 export default async function AgendamentosPage() {
   const supabase = createClient()
   const { data: { user } } = await supabase.auth.getUser()
+  if (!user) redirect('/login')
 
-  const result = await supabase
+  const { data: rawBookings } = await supabase
     .from('bookings')
-    .select('*, barbers(id, profiles(full_name, avatar_url)), barber_services(name)')
-    .eq('client_id', user!.id)
+    .select('id, status, scheduled_at, total_amount, address, barber_id, barber_services(name)')
+    .eq('client_id', user.id)
     .order('created_at', { ascending: false })
 
-  const bookings = (result.data as BookingRow[] | null) ?? []
-  const active   = bookings.filter(b => ['pending', 'accepted'].includes(b.status))
-  const history  = bookings.filter(b => !['pending', 'accepted'].includes(b.status))
+  const bookings = (rawBookings ?? []) as unknown as Array<{
+    id: string
+    status: string
+    scheduled_at: string | null
+    total_amount: number
+    address: string
+    barber_id: string
+    barber_services: { name: string }
+  }>
+
+  const active  = bookings.filter(b => ['pending', 'accepted'].includes(b.status))
+  const history = bookings.filter(b => !['pending', 'accepted'].includes(b.status))
 
   return (
     <div className="space-y-8">
@@ -52,7 +56,6 @@ export default async function AgendamentosPage() {
         </Link>
       </div>
 
-      {/* Ativos */}
       <section>
         <h2 className="font-semibold text-gray-700 mb-3">Em andamento</h2>
         {active.length === 0 ? (
@@ -67,44 +70,50 @@ export default async function AgendamentosPage() {
           </Card>
         ) : (
           <div className="space-y-3">
-            {active.map(b => <BookingCard key={b.id} booking={b} />)}
+            {active.map(b => (
+              <div key={b.id} className="bg-white rounded-2xl ring-1 ring-gray-100 p-4 flex items-center gap-4">
+                <div className="flex-1 min-w-0">
+                  <p className="font-semibold text-gray-900">{b.barber_services.name}</p>
+                  <p className="text-sm text-gray-500 truncate">{b.address}</p>
+                  {b.scheduled_at && (
+                    <p className="text-xs text-gray-400 mt-0.5">{formatDate(b.scheduled_at)}</p>
+                  )}
+                </div>
+                <div className="text-right shrink-0 space-y-1.5">
+                  <Badge variant={statusVariant[b.status] ?? 'default'}>
+                    {BOOKING_STATUS_LABELS[b.status]}
+                  </Badge>
+                  <p className="text-sm font-bold text-gray-900">{formatCurrency(b.total_amount)}</p>
+                </div>
+              </div>
+            ))}
           </div>
         )}
       </section>
 
-      {/* Histórico */}
       {history.length > 0 && (
         <section>
           <h2 className="font-semibold text-gray-700 mb-3">Histórico</h2>
           <div className="space-y-3">
-            {history.map(b => <BookingCard key={b.id} booking={b} />)}
+            {history.map(b => (
+              <div key={b.id} className="bg-white rounded-2xl ring-1 ring-gray-100 p-4 flex items-center gap-4 opacity-70">
+                <div className="flex-1 min-w-0">
+                  <p className="font-semibold text-gray-900">{b.barber_services.name}</p>
+                  {b.scheduled_at && (
+                    <p className="text-xs text-gray-400 mt-0.5">{formatDate(b.scheduled_at)}</p>
+                  )}
+                </div>
+                <div className="text-right shrink-0 space-y-1.5">
+                  <Badge variant={statusVariant[b.status] ?? 'default'}>
+                    {BOOKING_STATUS_LABELS[b.status]}
+                  </Badge>
+                  <p className="text-sm font-bold text-gray-900">{formatCurrency(b.total_amount)}</p>
+                </div>
+              </div>
+            ))}
           </div>
         </section>
       )}
-    </div>
-  )
-}
-
-function BookingCard({ booking: b }: { booking: BookingRow }) {
-  const barber  = b.barbers.profiles
-  const service = b.barber_services
-
-  return (
-    <div className="bg-white rounded-2xl ring-1 ring-gray-100 p-4 flex items-center gap-4">
-      <Avatar src={barber.avatar_url} name={barber.full_name} size="md" />
-      <div className="flex-1 min-w-0">
-        <p className="font-semibold text-gray-900 truncate">{barber.full_name}</p>
-        <p className="text-sm text-gray-500">{service.name}</p>
-        {b.scheduled_at && (
-          <p className="text-xs text-gray-400 mt-0.5">{formatDate(b.scheduled_at)}</p>
-        )}
-      </div>
-      <div className="text-right shrink-0 space-y-1.5">
-        <Badge variant={statusVariant[b.status] ?? 'default'}>
-          {BOOKING_STATUS_LABELS[b.status]}
-        </Badge>
-        <p className="text-sm font-bold text-gray-900">{formatCurrency(b.total_amount)}</p>
-      </div>
     </div>
   )
 }
