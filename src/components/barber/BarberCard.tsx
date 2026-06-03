@@ -19,7 +19,7 @@ export function BarberCard({ barber, distanceKm }: BarberCardProps) {
   const isNew = barber.rating_count < 10
 
   return (
-    <Link href={`/barbeiro/${barber.id}`} className="block group">
+    <Link href={`/barbeiros/${barber.id}`} className="block group">
       <div className="bg-blade-card border border-blade-border rounded-2xl p-5 hover:border-gold transition-all">
         <div className="flex items-start gap-4">
           <Avatar

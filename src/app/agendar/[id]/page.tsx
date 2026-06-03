@@ -39,7 +39,7 @@ export default async function AgendarPage({ params }: { params: { id: string } }
       <div className="min-h-screen bg-gray-50 flex items-center justify-center px-6">
         <div className="text-center">
           <p className="text-gray-500">Este barbeiro ainda não configurou seu endereço base.</p>
-          <Link href={`/barbeiro/${params.id}`} className="mt-4 inline-block text-amber-600 hover:underline">
+          <Link href={`/barbeiros/${params.id}`} className="mt-4 inline-block text-amber-600 hover:underline">
             Voltar ao perfil
           </Link>
         </div>
@@ -52,7 +52,7 @@ export default async function AgendarPage({ params }: { params: { id: string } }
       <div className="mx-auto max-w-lg px-4 py-8">
         {/* Back */}
         <Link
-          href={`/barbeiro/${params.id}`}
+          href={`/barbeiros/${params.id}`}
           className="inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-900 mb-6 transition-colors"
         >
           <ArrowLeft className="h-4 w-4" /> Voltar ao perfil
