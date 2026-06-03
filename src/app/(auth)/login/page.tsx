@@ -1,95 +1,95 @@
 'use client'
 
-import { Suspense, useState } from 'react'
+import { useState } from 'react'
 import Link from 'next/link'
-import { useRouter, useSearchParams } from 'next/navigation'
-import { Scissors } from 'lucide-react'
-import { Input } from '@/components/ui/Input'
-import { Button } from '@/components/ui/Button'
 
-function LoginForm() {
-  const [email, setEmail] = useState('')
+export default function LoginPage() {
+  const [email, setEmail]       = useState('')
   const [password, setPassword] = useState('')
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState<string | null>(null)
-  const router = useRouter()
-  const params = useSearchParams()
-  const redirectTo = params.get('redirectTo') ?? '/cliente/dashboard'
+  const [loading, setLoading]   = useState(false)
+  const [error, setError]       = useState('')
 
   async function handleLogin(e: React.FormEvent) {
     e.preventDefault()
     setLoading(true)
-    setError(null)
+    setError('')
 
     const { createClient } = await import('@/lib/supabase/client')
     const supabase = createClient()
-    const { error } = await supabase.auth.signInWithPassword({ email, password })
+    const { data, error: authError } = await supabase.auth.signInWithPassword({ email, password })
 
-    if (error) {
+    if (authError || !data.user) {
       setError('Email ou senha incorretos.')
       setLoading(false)
       return
     }
 
-    router.push(redirectTo)
-    router.refresh()
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('type')
+      .eq('id', data.user.id)
+      .single()
+
+    const type = (profile as { type: string } | null)?.type
+    const dest = type === 'barber' ? '/barbeiro/dashboard'
+               : type === 'admin'  ? '/admin/barbeiros'
+               : '/cliente/dashboard'
+
+    window.location.href = dest
   }
 
   return (
-    <form onSubmit={handleLogin} className="bg-white rounded-2xl p-8 space-y-5 shadow-xl">
-      <Input
-        label="Email"
-        type="email"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-        autoComplete="email"
-        required
-      />
-      <Input
-        label="Senha"
-        type="password"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-        autoComplete="current-password"
-        required
-      />
-
-      {error && <p className="text-sm text-red-500">{error}</p>}
-
-      <Button type="submit" loading={loading} className="w-full" size="lg">
-        Entrar
-      </Button>
-
-      <div className="text-center text-sm text-gray-500 space-y-2">
-        <p>
-          Não tem conta?{' '}
-          <Link href="/cadastro/cliente" className="text-brand-600 font-medium hover:underline">
-            Criar como cliente
+    <div style={{ minHeight: '100vh', background: '#0A0A0A', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '16px' }}>
+      <div style={{ width: '100%', maxWidth: '360px' }}>
+        <div style={{ textAlign: 'center', marginBottom: '32px' }}>
+          <Link href="/" style={{ color: '#C9A84C', fontSize: '20px', fontWeight: 'bold', letterSpacing: '0.2em', textDecoration: 'none' }}>
+            BLADE CLUB
           </Link>
-          {' '}ou{' '}
-          <Link href="/cadastro/barbeiro" className="text-brand-600 font-medium hover:underline">
-            como barbeiro
-          </Link>
-        </p>
-      </div>
-    </form>
-  )
-}
-
-export default function LoginPage() {
-  return (
-    <div className="min-h-screen bg-gray-950 flex items-center justify-center px-4">
-      <div className="w-full max-w-sm">
-        <div className="text-center mb-8">
-          <Link href="/" className="inline-flex items-center gap-2 text-white font-bold text-xl">
-            <Scissors className="h-6 w-6 text-brand-400" />
-            BarberApp
-          </Link>
-          <p className="mt-3 text-gray-400">Acesse sua conta</p>
+          <p style={{ marginTop: '8px', color: '#888' }}>Acesse sua conta</p>
         </div>
-        <Suspense fallback={<div className="bg-white rounded-2xl p-8 h-64 animate-pulse" />}>
-          <LoginForm />
-        </Suspense>
+
+        <form onSubmit={handleLogin} style={{ background: 'white', borderRadius: '16px', padding: '32px', display: 'flex', flexDirection: 'column', gap: '20px', boxShadow: '0 20px 60px rgba(0,0,0,0.5)' }}>
+          <div>
+            <label style={{ display: 'block', fontSize: '14px', fontWeight: '500', marginBottom: '6px', color: '#374151' }}>Email</label>
+            <input
+              type="email"
+              value={email}
+              onChange={e => setEmail(e.target.value)}
+              required
+              autoComplete="email"
+              style={{ width: '100%', border: '1px solid #e5e7eb', borderRadius: '12px', padding: '10px 16px', fontSize: '14px', outline: 'none', boxSizing: 'border-box' }}
+            />
+          </div>
+
+          <div>
+            <label style={{ display: 'block', fontSize: '14px', fontWeight: '500', marginBottom: '6px', color: '#374151' }}>Senha</label>
+            <input
+              type="password"
+              value={password}
+              onChange={e => setPassword(e.target.value)}
+              required
+              autoComplete="current-password"
+              style={{ width: '100%', border: '1px solid #e5e7eb', borderRadius: '12px', padding: '10px 16px', fontSize: '14px', outline: 'none', boxSizing: 'border-box' }}
+            />
+          </div>
+
+          {error && <p style={{ color: '#ef4444', fontSize: '14px' }}>{error}</p>}
+
+          <button
+            type="submit"
+            disabled={loading}
+            style={{ width: '100%', background: '#C9A84C', color: 'white', border: 'none', borderRadius: '999px', padding: '14px', fontSize: '14px', fontWeight: '600', cursor: loading ? 'not-allowed' : 'pointer', opacity: loading ? 0.7 : 1 }}
+          >
+            {loading ? 'Entrando...' : 'Entrar'}
+          </button>
+
+          <p style={{ textAlign: 'center', fontSize: '14px', color: '#6b7280' }}>
+            Não tem conta?{' '}
+            <Link href="/cadastro/cliente" style={{ color: '#C9A84C', fontWeight: '500' }}>Criar como cliente</Link>
+            {' '}ou{' '}
+            <Link href="/cadastro/barbeiro" style={{ color: '#C9A84C', fontWeight: '500' }}>como barbeiro</Link>
+          </p>
+        </form>
       </div>
     </div>
   )

@@ -2,7 +2,6 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
-import { useRouter } from 'next/navigation'
 import { Scissors, CheckCircle } from 'lucide-react'
 import { Input } from '@/components/ui/Input'
 import { Button } from '@/components/ui/Button'
@@ -16,7 +15,6 @@ export default function CadastroBarbeiroPage() {
   })
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  const router = useRouter()
 
   function set(field: string, value: string | boolean) {
     setForm((prev) => ({ ...prev, [field]: value }))
@@ -62,7 +60,7 @@ export default function CadastroBarbeiroPage() {
       service_radius_km: Number(form.serviceRadius),
     })
 
-    router.push('/barbeiro/dashboard?cadastro=pendente')
+    window.location.href = '/barbeiro/dashboard?cadastro=pendente'
   }
 
   return (

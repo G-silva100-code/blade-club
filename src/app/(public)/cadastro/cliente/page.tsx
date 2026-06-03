@@ -2,7 +2,6 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
-import { useRouter } from 'next/navigation'
 import { Scissors } from 'lucide-react'
 import { Input } from '@/components/ui/Input'
 import { Button } from '@/components/ui/Button'
@@ -11,7 +10,6 @@ export default function CadastroClientePage() {
   const [form, setForm] = useState({ name: '', email: '', phone: '', password: '' })
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  const router = useRouter()
 
   function set(field: string, value: string) {
     setForm((prev) => ({ ...prev, [field]: value }))
@@ -45,7 +43,7 @@ export default function CadastroClientePage() {
 
     await supabase.from('clients').insert({ id: data.user.id })
 
-    router.push('/cliente/dashboard')
+    window.location.href = '/cliente/dashboard'
   }
 
   return (
